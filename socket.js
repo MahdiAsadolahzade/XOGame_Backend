@@ -5,34 +5,36 @@ const socketIo = require('socket.io');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
-io.origins('*:*');
-// لیست کاربران متصل به چت
+const io = socketIo(server,{
+  cors: {origin:"*"}
+});
+
+
 const connectedUsers = new Set();
 
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
-  // وقتی یک کاربر به چت وارد می‌شود
+ 
   socket.on('joinChat', (username) => {
-    socket.join('chatroom'); // ورود به اتاق چت
-    connectedUsers.add(socket.id); // افزودن کاربر به لیست متصل شده‌ها
+    socket.join('chatroom');
+    connectedUsers.add(socket.id);
 
-    const userDisplayName = username || 'Anonymous'; // استفاده از نام کاربری یا "Anonymous"
+    const userDisplayName = username || 'Anonymous';
 
-    // اعلام ورود کاربر به بقیه
+   
     io.to('chatroom').emit('userJoined', userDisplayName);
 
-    // وقتی یک کاربر پیامی ارسال می‌کند
+   
     socket.on('sendMessage', (message) => {
       io.to('chatroom').emit('messageReceived', { user: userDisplayName, message });
     });
 
-    // وقتی کاربر اتصال خود را قطع می‌کند
+  
     socket.on('disconnect', () => {
       console.log(`A user disconnected: ${socket.id}`);
-      connectedUsers.delete(socket.id); // حذف کاربر از لیست متصل شده‌ها
-      io.to('chatroom').emit('userLeft', userDisplayName); // اعلام خروج کاربر به بقیه
+      connectedUsers.delete(socket.id); 
+      io.to('chatroom').emit('userLeft', userDisplayName); 
     });
   });
 });

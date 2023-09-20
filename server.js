@@ -18,7 +18,7 @@ app.get("/getuser", (req, res) => {
       })
       .catch((error) => {
         console.error(error);
-        res.status(500).json({ error: "خطای سرور" });
+        res.status(500).json({ error: " Server Error" });
       });
   });
 
@@ -37,7 +37,7 @@ app.get("/checkuser/:username", (req, res) => {
       })
       .catch((error) => {
         console.error(error);
-        res.status(500).json({ error: "خطای سرور" });
+        res.status(500).json({ error: "Server Error" });
       });
   });
   
@@ -47,25 +47,24 @@ app.get("/checkuser/:username", (req, res) => {
     const password = req.body["password"];
     const getUserQuery = "SELECT * FROM acounts WHERE username = $1";
   
-    pool.query(getUserQuery, [username]) // پارامتر username را به صورت آرایه ارسال کنید
+    pool.query(getUserQuery, [username]) 
       .then((result) => {
         if (result.rows.length === 1) {
           const user = result.rows[0];
           if (user.password === password) {
-            // رمز عبور مطابقت داشته است
-            res.json({ message: "ورود موفقیت‌آمیز بود" });
+        
+            res.json({ message: " Login was Successful" });
           } else {
-            // رمز عبور نامعتبر است
-            res.status(401).json({ error: "رمز عبور نامعتبر است" });
+            res.status(401).json({ error: "Invalid Password" });
           }
         } else {
-          // کاربر با نام کاربری مشخص وجود ندارد
-          res.status(404).json({ error: "کاربر با این نام کاربری وجود ندارد" });
+        
+          res.status(404).json({ error: " Invalid Username" });
         }
       })
       .catch((error) => {
         console.error(error);
-        res.status(500).json({ error: "خطای سرور" });
+        res.status(500).json({ error: "Server Error" });
       });
   });
   
